@@ -1,15 +1,5 @@
 import joblib, os
 
-def predict_fn(input_data, model):
-    """Preprocess input data
-    """
-    payload = input_data
-    
-    predictions = model.predict(payload)
-    print("From user-inference file- Shape of predictions: ", predictions.shape)
-
-    return predictions
-
 def model_fn(model_dir):
     """
     Deserialized and return fitted model
@@ -19,6 +9,18 @@ def model_fn(model_dir):
     print("From user-inference file- Model loaded: ")     
     
     return model
+
+def predict_fn(input_data, model):
+    """
+    주어진 input_data를 
+    """
+    payload = input_data
+    
+    predictions = model.predict(payload)
+    print("From user-inference file- Shape of predictions: ", predictions.shape)
+
+    return predictions
+
 
 
 

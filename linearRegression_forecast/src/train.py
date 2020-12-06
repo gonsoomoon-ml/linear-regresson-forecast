@@ -11,16 +11,17 @@ import numpy as np
 from sklearn.linear_model import Ridge, RidgeCV, LassoCV, Lasso
 from sklearn.model_selection import cross_val_score
 
-def train(train_X, train_y, model):
+def train(args, train_X, train_y, model):
     '''
     아래 모델의 타입에 따라 해당 모델을 학습하고 모델을 리턴한다.
     ridge_model = train(train_X, train_y, model="ridge")
     '''
+    print("alpha value in train: ", args.alpha)
     if model =='ridge':
-        model = Ridge(alpha=3.0)
+        model = Ridge(alpha= args.alpha)
         print("Train Ridge model")
     elif model == 'lasso':
-        model = Lasso(alpha=3.0)
+        model = Lasso(alpha=1.0)
         print("Train Lasso model")        
         
     model.fit(train_X, train_y)        
@@ -63,20 +64,24 @@ def handle_input_data(args):
     return train_y, train_X
 
     
-    
-    
 def parse_args():   
     '''
     커맨드 인자로 넘어온 정보를 파싱한다.
+    아래 args를 파싱한 결과는 아래와 같습니다.
+    args:  Namespace(alpha=1.5,
+    model_dir='/opt/ml/model',train='/opt/ml/input/data/train')
     '''
     parser = argparse.ArgumentParser()
 
-    # Hyperparameters are described here. In this simple example we are just including one hyperparameter.
-    # parser.add_argument('--max_leaf_nodes', type=int, default=-1)
+    # Hyperparameters 의 데이터를 파싱하여 args 오브젝트에 저장 합니다.
+    parser.add_argument('--alpha', type=float, default=3)
 
-    # Sagemaker specific arguments. Defaults are set in the environment variables.
-    parser.add_argument('--output-data-dir', type=str, default=os.environ['SM_OUTPUT_DATA_DIR'])
+    # 모델은 훈련후에 model_dir='/opt/ml/model' 로 저장이 됩니다. 이후에 자동으로 S3에 업로드가 됩니다.
     parser.add_argument('--model-dir', type=str, default=os.environ['SM_MODEL_DIR'])
+    
+    # sklearn_estimator.fit({'train': s3_train_path}, logs=False) 에서 기술한
+    # 입력 데이터는 S3로 부터 train='/opt/ml/input/data/train' 경로로 다운로드 됩니다.
+    # 이후에 이 로컬 경로에서 데이터를 가져와서 훈련을 합니다.
     parser.add_argument('--train', type=str, default=os.environ['SM_CHANNEL_TRAIN'])
 
     args = parser.parse_args()
@@ -84,15 +89,12 @@ def parse_args():
     
     return args
 
-    
-    
-
 if __name__ == '__main__':
-    args = parse_args()    
-    train_y, train_X = handle_input_data(args)
+    args = parse_args()  # 파라미터 얻음  
+    train_y, train_X = handle_input_data(args) # 훈련 데이터를 traiy_y, train_X 로 분리 합니다.
     
-    ridge_model = train(train_X, train_y, model="ridge")
-    model_name = 'model.joblib'
-    save_model(ridge_model, args.model_dir, model_name)
+    ridge_model = train(args, train_X, train_y, model="ridge") # 데이터를 가지고 훈련 합니다.
+    model_name = 'model.joblib' #저장할 모델 이름 입니다.
+    save_model(ridge_model, args.model_dir, model_name) #args.model_dir 에 명시된 경로에 모델 저장
 
     
