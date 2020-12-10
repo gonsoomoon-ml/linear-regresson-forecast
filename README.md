@@ -11,7 +11,7 @@
 
 ## 데이터
 - 미국 가솔린 프더덕트의 주간 사용량을 사용합니다.
-- US Gasoline Product Demand: 1991-2017 (Weekly Demand) 를 사용합니다. 데이터의 설명은 여기를 참조하세요. [Here](https://rdrr.io/github/robjhyndman/fpp/man/gasoline.html)
+- US Gasoline Product Demand: 1991-2007 (Weekly Demand) 를 사용합니다. 데이터의 설명은 여기를 참조하세요. [Here](https://rdrr.io/github/robjhyndman/fpp/man/gasoline.html)
 
 ![data_chart](linearRegression_forecast/img/data_chart.png)
 
